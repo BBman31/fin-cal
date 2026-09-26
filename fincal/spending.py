@@ -57,11 +57,16 @@ def clean_log(raw: pd.DataFrame) -> pd.DataFrame:
 
     df["item"] = df["item"].fillna("").astype(str).str.strip()
     for col in ("category_override", "comment"):
-        df[col] = df[col].where(df[col].notna(), None)
-        df[col] = df[col].map(lambda v: str(v).strip() or None if v is not None else None)
+        df[col] = df[col].map(_clean_text).astype(object)
     df = df.sort_values("date", kind="stable").reset_index(drop=True)
     df.attrs["dropped_rows"] = dropped
     return df
+
+
+def _clean_text(value) -> str | None:
+    if value is None or pd.isna(value):
+        return None
+    return str(value).strip() or None
 
 
 def _parse_dates(values: pd.Series) -> pd.Series:
