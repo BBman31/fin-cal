@@ -4,7 +4,7 @@ import pandas as pd
 
 from fincal.mapping import UNMAPPED
 from fincal.models import Settings
-from fincal.spending import enrich, load_log
+from fincal.spending import clean_log, enrich, load_log
 
 SETTINGS = Settings(
     item_categories={"Netto": "Food", "Boozt": "Clothes"},
@@ -69,3 +69,15 @@ def test_enrich(tmp_path):
     assert list(df["category"]) == ["Food", UNMAPPED]
     assert list(df["bucket"]) == ["Fixed", UNMAPPED]
     assert list(df["mapped"]) == [True, False]
+
+
+def test_text_dates_iso_and_day_first():
+    raw = pd.DataFrame(
+        [("2026-01-03", "a", 1), ("03.02.2026", "b", 1), ("13/02/2026", "c", 1)],
+        columns=["Date", "Item", "Amount"],
+    )
+    assert clean_log(raw)["date"].dt.strftime("%Y-%m-%d").tolist() == [
+        "2026-01-03",
+        "2026-02-03",
+        "2026-02-13",
+    ]
