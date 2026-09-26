@@ -49,8 +49,8 @@ def clean_log(raw: pd.DataFrame) -> pd.DataFrame:
             df[col] = None
     df = df[COLUMNS].dropna(how="all")
 
-    df["date"] = pd.to_datetime(df["date"], errors="coerce", dayfirst=True)
-    df["amount"] = pd.to_numeric(df["amount"], errors="coerce")
+    df["date"] = _parse_dates(df["date"])
+    df["amount"] = pd.to_numeric(df["amount"], errors="coerce").astype(float)
     valid = df["date"].notna() & df["amount"].notna()
     dropped = int((~valid).sum())
     df = df[valid].copy()
@@ -62,6 +62,17 @@ def clean_log(raw: pd.DataFrame) -> pd.DataFrame:
     df = df.sort_values("date", kind="stable").reset_index(drop=True)
     df.attrs["dropped_rows"] = dropped
     return df
+
+
+def _parse_dates(values: pd.Series) -> pd.Series:
+    """Excel dates arrive as datetimes; text dates may be ISO or day-first (03.01.2026)."""
+    parsed = pd.to_datetime(values, errors="coerce", format="ISO8601")
+    missing = parsed.isna() & values.notna()
+    if missing.any():
+        parsed[missing] = pd.to_datetime(
+            values[missing].astype(str), errors="coerce", dayfirst=True, format="mixed"
+        )
+    return parsed
 
 
 def enrich(log: pd.DataFrame, settings: Settings) -> pd.DataFrame:
