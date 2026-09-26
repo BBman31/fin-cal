@@ -25,13 +25,13 @@ def run_page(page: str) -> AppTest:
 
 def test_example_mode_is_read_only(monkeypatch, tmp_path):
     monkeypatch.setenv("FINCAL_DATA_DIR", str(tmp_path / "missing"))
-    at = run_page("pages/budget_setup.py")
+    at = run_page("views/budget_setup.py")
     save = next(b for b in at.button if b.label == "Save")
     assert save.disabled
 
 
 def test_budget_setup_saves_income(data_dir):
-    at = run_page("pages/budget_setup.py")
+    at = run_page("views/budget_setup.py")
     assert at.metric[0].value == "17 600 DKK"
     at.number_input[0].set_value(40000).run()
     assert at.metric[0].value == "22 000 DKK"
@@ -40,7 +40,7 @@ def test_budget_setup_saves_income(data_dir):
 
 
 def test_mappings_page_renders_with_hit_counts(data_dir):
-    at = run_page("pages/mappings.py")
+    at = run_page("views/mappings.py")
     assert at.title[0].value == "Mappings"
     assert not at.error
     save = next(b for b in at.button if b.label == "Save mappings")
@@ -48,7 +48,7 @@ def test_mappings_page_renders_with_hit_counts(data_dir):
 
 
 def test_open_close_start_next_month(data_dir):
-    at = run_page("pages/open_close.py")
+    at = run_page("views/open_close.py")
     start = next(b for b in at.button if b.label.startswith("Start"))
     assert start.label == "Start Oct 2026"
     start.click().run()
@@ -60,14 +60,14 @@ def test_open_close_start_next_month(data_dir):
     settings = storage.load_settings(data_dir / "settings.yaml")
     settings.open_close[-1].close = 1234.5
     storage.save_settings(settings, data_dir / "settings.yaml")
-    at = run_page("pages/open_close.py")
+    at = run_page("views/open_close.py")
     next(b for b in at.button if b.label == "Start Nov 2026").click().run()
     oc = storage.load_settings(data_dir / "settings.yaml").open_close
     assert (oc[-1].month, oc[-1].open) == ("2026-11", 1234.5)
 
 
 def test_spending_log_filters_and_unmapped(data_dir):
-    at = run_page("pages/spending_log.py")
+    at = run_page("views/spending_log.py")
     assert at.title[0].value == "Spending Log"
     assert "unmapped item" in at.expander[0].label
     rows_latest = int(at.metric[0].value)
@@ -80,7 +80,7 @@ def test_spending_log_filters_and_unmapped(data_dir):
 
 
 def test_dashboard_renders_every_month(data_dir):
-    at = run_page("pages/dashboard.py")
+    at = run_page("views/dashboard.py")
     assert at.title[0].value == "Dashboard"
     assert [m.label for m in at.metric][:2] == ["Spent", "Left to spend"]
     for month in at.selectbox[0].options:
@@ -90,5 +90,11 @@ def test_dashboard_renders_every_month(data_dir):
 
 def test_dashboard_empty_log(data_dir):
     (data_dir / "spending_log.xlsx").unlink()
-    at = run_page("pages/dashboard.py")
+    at = run_page("views/dashboard.py")
     assert "No spending yet" in at.info[0].value
+
+
+def test_no_streamlit_pages_dir():
+    # A top-level pages/ folder makes Streamlit run page files directly (bypassing app.py's
+    # st.navigation, sidebar and layout) when a page URL is opened on a fresh server.
+    assert not (storage.PROJECT_ROOT / "pages").exists()
