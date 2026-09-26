@@ -6,6 +6,7 @@ st.set_page_config(page_title="fin-cal", page_icon="💰", layout="wide")
 
 pages = [
     st.Page("pages/budget_setup.py", title="Budget Setup", icon="⚙️"),
+    st.Page("pages/mappings.py", title="Mappings", icon="🏷️"),
 ]
 
 ui.sidebar()
