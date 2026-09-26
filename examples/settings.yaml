@@ -1,0 +1,89 @@
+currency: DKK
+income: 32000.0
+bucket_weights:
+  Fixed: 55.0
+  Future: 20.0
+  Flexible: 25.0
+fixed_costs:
+- category: Flat rent
+  amount: 9500
+  comment: Flat rent price
+- category: Food
+  amount: 4000
+  comment: Groceries + canteen
+- category: Insurance
+  amount: 450
+  comment: Tryg
+- category: Health
+  amount: 300
+  comment: Pharmacy, Matas
+- category: Charity
+  amount: 200
+  comment: Monthly donation
+flexible_categories:
+- category: Clothes
+  weight: 25
+- category: Travel
+  weight: 20
+- category: Free Time
+  weight: 20
+- category: Home
+  weight: 15
+- category: LEGO
+  weight: 10
+- category: Other
+  weight: 10
+item_categories:
+  Red Barnet: Charity
+  ABC Lavpris: Food
+  LEGO store: LEGO
+  Netto: Food
+  Lidl: Food
+  Super Brugsen: Food
+  Fotex: Food
+  Compass Group: Food
+  Flat rent price: Flat rent
+  DSB: Travel
+  Jysk: Home
+  Notino: Perfume
+  Nordnet: Investment
+  Tryg: Insurance
+  Boozt: Clothes
+  Matas: Health
+  Cinema: Free Time
+category_buckets:
+  Food: Fixed
+  Flat rent: Fixed
+  Charity: Fixed
+  Insurance: Fixed
+  Health: Fixed
+  Clothes: Flexible
+  LEGO: Flexible
+  Travel: Flexible
+  Free Time: Flexible
+  Home: Flexible
+  Perfume: Flexible
+  Other: Flexible
+  Investment: Future
+open_close:
+- month: 2026-03
+  open: 25000.0
+  close: 33855.0
+- month: 2026-04
+  open: 33855.0
+  close: 42970.0
+- month: 2026-05
+  open: 42970.0
+  close: 50470.0
+- month: 2026-06
+  open: 50470.0
+  close: 58210.0
+- month: 2026-07
+  open: 58210.0
+  close: 67010.0
+- month: 2026-08
+  open: 67010.0
+  close: 74548.0
+- month: 2026-09
+  open: 74548.0
+  close: null
