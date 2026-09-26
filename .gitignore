@@ -4,3 +4,17 @@
 *.db
 .beads-credential-key
 .beads/proxieddb/
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+
+# Real financial data stays local
+data/
+
+# Excel lock files / macOS
+~$*.xlsx
+.DS_Store

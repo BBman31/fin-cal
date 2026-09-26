@@ -60,18 +60,20 @@ This protocol applies when ending a Beads implementation workflow. It is subordi
 
 ## Build & Test
 
-_Add your build and test commands here_
-
 ```bash
-# Example:
-# npm install
-# npm test
+uv sync
+uv run streamlit run app.py
+uv run pytest
+uv run ruff check .
 ```
 
 ## Architecture Overview
 
-_Add a brief overview of your project architecture_
+Streamlit app (`app.py` + `pages/`), logic in `fincal/` (pure pandas, testable).
+Spending log is read-only from `data/spending_log.xlsx`; settings/mappings/open-close live in
+`data/settings.yaml`. `data/` is gitignored (real finances); `examples/` holds fake data.
 
 ## Conventions & Patterns
 
-_Add your project-specific conventions here_
+- Keep calculations in `fincal/metrics.py` as pure functions; pages only render.
+- Never commit anything under `data/`.

@@ -1,0 +1,7 @@
+[server]
+# Local-only: financial data should not be served on the network
+address = "localhost"
+headless = false
+
+[browser]
+gatherUsageStats = false
