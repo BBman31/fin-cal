@@ -64,3 +64,16 @@ def test_open_close_start_next_month(data_dir):
     next(b for b in at.button if b.label == "Start Nov 2026").click().run()
     oc = storage.load_settings(data_dir / "settings.yaml").open_close
     assert (oc[-1].month, oc[-1].open) == ("2026-11", 1234.5)
+
+
+def test_spending_log_filters_and_unmapped(data_dir):
+    at = run_page("pages/spending_log.py")
+    assert at.title[0].value == "Spending Log"
+    assert "unmapped item" in at.expander[0].label
+    rows_latest = int(at.metric[0].value)
+    at.multiselect[0].set_value([]).run()  # all months
+    assert int(at.metric[0].value.replace(" ", "")) > rows_latest
+    at.text_input[0].set_value("netto").run()
+    assert not at.exception
+    add = next(b for b in at.button if b.label.startswith("Add"))
+    assert add.disabled  # no category picked yet
