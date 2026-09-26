@@ -1,0 +1,39 @@
+import shutil
+
+import pytest
+from streamlit.testing.v1 import AppTest
+
+from fincal import storage
+
+
+@pytest.fixture
+def data_dir(tmp_path, monkeypatch):
+    """A writable copy of the example data."""
+    shutil.copytree(storage.EXAMPLES_DIR, tmp_path, dirs_exist_ok=True)
+    monkeypatch.setenv("FINCAL_DATA_DIR", str(tmp_path))
+    return tmp_path
+
+
+def run_page(page: str) -> AppTest:
+    at = AppTest.from_file(str(storage.PROJECT_ROOT / "app.py"), default_timeout=30)
+    at.run()
+    at.switch_page(page)
+    at.run()
+    assert not at.exception, [e.message for e in at.exception]
+    return at
+
+
+def test_example_mode_is_read_only(monkeypatch, tmp_path):
+    monkeypatch.setenv("FINCAL_DATA_DIR", str(tmp_path / "missing"))
+    at = run_page("pages/budget_setup.py")
+    save = next(b for b in at.button if b.label == "Save")
+    assert save.disabled
+
+
+def test_budget_setup_saves_income(data_dir):
+    at = run_page("pages/budget_setup.py")
+    assert at.metric[0].value == "17 600 DKK"
+    at.number_input[0].set_value(40000).run()
+    assert at.metric[0].value == "22 000 DKK"
+    next(b for b in at.button if b.label == "Save").click().run()
+    assert storage.load_settings(data_dir / "settings.yaml").income == 40000
