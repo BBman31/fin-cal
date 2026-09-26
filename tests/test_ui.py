@@ -37,3 +37,11 @@ def test_budget_setup_saves_income(data_dir):
     assert at.metric[0].value == "22 000 DKK"
     next(b for b in at.button if b.label == "Save").click().run()
     assert storage.load_settings(data_dir / "settings.yaml").income == 40000
+
+
+def test_mappings_page_renders_with_hit_counts(data_dir):
+    at = run_page("pages/mappings.py")
+    assert at.title[0].value == "Mappings"
+    assert not at.error
+    save = next(b for b in at.button if b.label == "Save mappings")
+    assert save.disabled  # nothing changed yet
