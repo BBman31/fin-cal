@@ -77,3 +77,18 @@ def test_spending_log_filters_and_unmapped(data_dir):
     assert not at.exception
     add = next(b for b in at.button if b.label.startswith("Add"))
     assert add.disabled  # no category picked yet
+
+
+def test_dashboard_renders_every_month(data_dir):
+    at = run_page("pages/dashboard.py")
+    assert at.title[0].value == "Dashboard"
+    assert [m.label for m in at.metric][:2] == ["Spent", "Left to spend"]
+    for month in at.selectbox[0].options:
+        at.selectbox[0].select(month).run()
+        assert not at.exception, month
+
+
+def test_dashboard_empty_log(data_dir):
+    (data_dir / "spending_log.xlsx").unlink()
+    at = run_page("pages/dashboard.py")
+    assert "No spending yet" in at.info[0].value
