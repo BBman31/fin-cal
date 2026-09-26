@@ -5,6 +5,7 @@ from fincal import ui
 st.set_page_config(page_title="fin-cal", page_icon="💰", layout="wide")
 
 pages = [
+    st.Page("pages/dashboard.py", title="Dashboard", icon="📊", default=True),
     st.Page("pages/spending_log.py", title="Spending Log", icon="🧾"),
     st.Page("pages/budget_setup.py", title="Budget Setup", icon="⚙️"),
     st.Page("pages/mappings.py", title="Mappings", icon="🏷️"),
