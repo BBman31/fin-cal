@@ -47,6 +47,33 @@ cp -rf source dest          # NOT: cp -r source dest
 - `apt-get` - use `-y` flag
 - `brew` - use `HOMEBREW_NO_AUTO_UPDATE=1` env var
 
+## Git Workflow
+
+One branch per beads issue, one PR per branch, merged on GitHub. This repo opts in:
+agents may commit, push feature branches and open PRs without asking. They must never
+push to `main`, merge locally, or merge PRs.
+
+1. **Pick and claim:** `bd ready`, then `bd update <id> --claim`.
+2. **Branch from up-to-date `main`:** `git checkout main && git pull`, then
+   `git checkout -b <type>/<bead-id>-<short-slug>`.
+   Types are `feat/`, `fix/` and `chore/`, for example `feat/fc-jeo-per-month-income`.
+   - If the work depends on a PR that isn't merged yet, branch from that PR's branch and
+     use it as the new PR's base. GitHub retargets the PR to `main` once the base merges,
+     because head branches are auto-deleted.
+3. **Commit** in small, focused commits. End the message with `Refs: <bead-id>`.
+   Before every push, run `uv run ruff format . && uv run ruff check . && uv run pytest`.
+4. **Open the PR** when the issue is done: push the branch and run
+   `gh pr create --base main` (or the stacked base). Give the PR a title in imperative
+   mood. The body says what changed and why, how it was verified, and `Beads: <bead-id>`.
+   Anything that couldn't be verified is stated plainly.
+5. **Merge** only on GitHub, only by the user, with a merge or rebase. No squash, because
+   squashing breaks stacked PRs.
+6. **After the merge:** `bd close <id>`, then `git checkout main && git pull`.
+   Follow-up work gets a new bead and a new branch; don't reopen a merged branch.
+
+Never commit anything under `data/`. Keep unrelated changes (tooling, generated files)
+out of feature PRs.
+
 <!-- BEGIN BEADS INTEGRATION v:1 profile:minimal hash:970c3bf2 -->
 ## Beads Issue Tracker
 
