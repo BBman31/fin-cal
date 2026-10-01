@@ -45,3 +45,22 @@ def test_mappings_page_renders_with_hit_counts(data_dir):
     assert not at.error
     save = next(b for b in at.button if b.label == "Save mappings")
     assert save.disabled  # nothing changed yet
+
+
+def test_open_close_start_next_month(data_dir):
+    at = run_page("pages/open_close.py")
+    start = next(b for b in at.button if b.label.startswith("Start"))
+    assert start.label == "Start Oct 2026"
+    start.click().run()
+    assert not at.exception
+    oc = storage.load_settings(data_dir / "settings.yaml").open_close
+    assert oc[-1].month == "2026-10"
+    assert oc[-1].open is None  # Sep has no close yet
+
+    settings = storage.load_settings(data_dir / "settings.yaml")
+    settings.open_close[-1].close = 1234.5
+    storage.save_settings(settings, data_dir / "settings.yaml")
+    at = run_page("pages/open_close.py")
+    next(b for b in at.button if b.label == "Start Nov 2026").click().run()
+    oc = storage.load_settings(data_dir / "settings.yaml").open_close
+    assert (oc[-1].month, oc[-1].open) == ("2026-11", 1234.5)
