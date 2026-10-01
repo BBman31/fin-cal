@@ -44,17 +44,20 @@ class Lookup:
     def from_dict(cls, mapping: dict[str, str]) -> Lookup:
         return cls.from_pairs(mapping.items())
 
-    def get(self, key: object, substring: bool = True) -> str | None:
+    def match(self, key: object, substring: bool = True) -> str | None:
+        """The normalized mapping key that ``key`` resolves through, if any."""
         norm = normalize(key)
         if not norm:
             return None
         if norm in self.exact:
-            return self.exact[norm]
+            return norm
         if substring:
-            for candidate in self._by_length:
-                if candidate in norm:
-                    return self.exact[candidate]
+            return next((c for c in self._by_length if c in norm), None)
         return None
+
+    def get(self, key: object, substring: bool = True) -> str | None:
+        matched = self.match(key, substring)
+        return None if matched is None else self.exact[matched]
 
 
 def resolve_category(item: object, items: Lookup) -> str:

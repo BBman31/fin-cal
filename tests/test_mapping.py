@@ -53,3 +53,9 @@ def test_duplicates_first_wins_and_conflicts_reported():
 def test_blank_rows_skipped():
     lookup = Lookup.from_pairs([("", "Food"), ("Netto", None), ("Netto", "Food")])
     assert lookup.exact == {"netto": "Food"}
+
+
+def test_match_returns_key():
+    assert ITEMS.match("Netto Billund") == "netto billund"
+    assert ITEMS.match("netto vejle") == "netto"
+    assert ITEMS.match("nope") is None
