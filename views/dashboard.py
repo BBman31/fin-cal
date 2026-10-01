@@ -53,9 +53,9 @@ k = st.columns(5)
 k[0].metric(
     "Spent",
     num(summary.spent),
-    delta(summary.spent, prev_summary.spent if prev_summary else None),
+    spent_delta := delta(summary.spent, prev_summary.spent if prev_summary else None),
     delta_color="inverse",
-    delta_description=vs_prev,
+    delta_description=vs_prev if spent_delta else None,
     help="All rows in the spending log for this month, including Future (investing/saving).",
     border=True,
 )
@@ -76,8 +76,8 @@ k[2].metric(
 k[3].metric(
     "Saved",
     num(summary.saved),
-    delta(summary.saved, prev_summary.saved if prev_summary else None),
-    delta_description=vs_prev,
+    saved_delta := delta(summary.saved, prev_summary.saved if prev_summary else None),
+    delta_description=vs_prev if saved_delta else None,
     help="Close − Open of the main account, from the Open / Close page.",
     border=True,
 )
@@ -91,7 +91,7 @@ k[4].metric(
     border=True,
 )
 if summary.unmapped_count:
-    st.page_link("pages/spending_log.py", label="Map the unmapped items →", icon="🏷️")
+    st.page_link("views/spending_log.py", label="Map the unmapped items →", icon="🏷️")
 
 
 def data_view(df: pd.DataFrame, key: str) -> None:

@@ -69,7 +69,7 @@ uv run ruff check .
 
 ## Architecture Overview
 
-Streamlit app (`app.py` + `pages/`), logic in `fincal/` (pure pandas, testable).
+Streamlit app (`app.py` + `views/`), logic in `fincal/` (pure pandas, testable).
 Spending log is read-only from `data/spending_log.xlsx`; settings/mappings/open-close live in
 `data/settings.yaml`. `data/` is gitignored (real finances); `examples/` holds fake data.
 
