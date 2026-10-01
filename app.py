@@ -1,6 +1,12 @@
 import streamlit as st
 
+from fincal import ui
+
 st.set_page_config(page_title="fin-cal", page_icon="💰", layout="wide")
 
-st.title("fin-cal")
-st.write("Personal budget dashboard. Pages coming soon.")
+pages = [
+    st.Page("pages/budget_setup.py", title="Budget Setup", icon="⚙️"),
+]
+
+ui.sidebar()
+st.navigation(pages).run()
